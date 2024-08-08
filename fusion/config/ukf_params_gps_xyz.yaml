@@ -4,7 +4,7 @@ ekf_filter_node:
 
     # Set to true if you are operating in a planar environment
     two_d_mode: false
-
+ 
     # Sensor configurations
     odom0: /hslam_data  # Topic name for SLAM data
     odom0_config: [true, true, true,  # Use x, y, z position data
