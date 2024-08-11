@@ -26,6 +26,13 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
+# Install Python scripts
+install(
+  PROGRAMS
+    scripts/get_transformation.py  # Path to your Python node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 # Install launch files and configuration files
 install(DIRECTORY
   launch
