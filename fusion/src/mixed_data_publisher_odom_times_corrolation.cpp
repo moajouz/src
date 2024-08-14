@@ -12,12 +12,33 @@ class MixedDataPublisher : public rclcpp::Node  // Define a class that inherits 
 public:
     MixedDataPublisher() : Node("mixed_data_publisher"), data_publishing_done_(false)  // Constructor initializes the node with the name "mixed_data_publisher" and sets the flag to false
     {
+        // // Create publishers for the "hslam_data" and "gps_data" topics with a queue size of 10
+        // hslam_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("hslam_data", 10);
+        // gps_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("gps_data", 10);
+
+        // // Define the path to the merged data file
+        // std::string merged_file_path = "/home/mooo/aub/datasets/ficosa_for_HSLAM/old_camera/Scale_B/Merged_results_GPS_xyz_my_scale_and_transformation/merged_output_9_my_scale_and_transformation.txt";
+        
+        // // Load and publish data from the merged file in a separate thread
+        // data_thread_ = std::thread(&MixedDataPublisher::loadAndPublishData, this, merged_file_path);
+
+        // // Create a subscriber to the /odometry/filtered topic
+        // ekf_subscriber_ = this->create_subscription<nav_msgs::msg::Odometry>(
+        //     "/odometry/filtered", 10,
+        //     std::bind(&MixedDataPublisher::ekfCallback, this, std::placeholders::_1)
+        // );
+
+        // // Open the file to save EKF data
+        // ekf_data_file_.open("/home/mooo/aub/datasets/ficosa_for_HSLAM/old_camera/Scale_B/Results_EKF_GPS_xyz_my_scale_and_transformation/ekf_result_9.txt", std::ios::out | std::ios::app);
+        // if (!ekf_data_file_.is_open()) {
+        //     RCLCPP_ERROR(this->get_logger(), "Failed to open EKF data file.");
+        // }
         // Create publishers for the "hslam_data" and "gps_data" topics with a queue size of 10
         hslam_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("hslam_data", 10);
         gps_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("gps_data", 10);
 
         // Define the path to the merged data file
-        std::string merged_file_path = "/home/mooo/aub/datasets/ficosa_for_HSLAM/Scale_B/Merged_results_GPS_xyz_my_scale_and_transformation/merged_output_5_my_scale_and_transformation.txt";
+        std::string merged_file_path = "/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Transformed_manual_corrolated/merged_output_1_may.txt";
         
         // Load and publish data from the merged file in a separate thread
         data_thread_ = std::thread(&MixedDataPublisher::loadAndPublishData, this, merged_file_path);
@@ -29,7 +50,7 @@ public:
         );
 
         // Open the file to save EKF data
-        ekf_data_file_.open("/home/mooo/aub/datasets/ficosa_for_HSLAM/Scale_B/Results_EKF_GPS_xyz_my_scale_and_transformation/ekf_result_5.txt", std::ios::out | std::ios::app);
+        ekf_data_file_.open("/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/EKF_Transformed_manual_corrolated/ekf_result_1_may.txt", std::ios::out | std::ios::app);
         if (!ekf_data_file_.is_open()) {
             RCLCPP_ERROR(this->get_logger(), "Failed to open EKF data file.");
         }

@@ -9,32 +9,63 @@ class TransformNode(Node):
     def __init__(self):
         super().__init__('transform')
 
-        # Initialize data storage
-        self.slam_points = []
-        self.timestamps = []
+        # Initialize current transformation parameters
+        self.scaling_factors = None
+        self.rotation_matrix = None
+        self.translation_vector = None
 
-        # Initialize subscribers
+        # Initialize subscriber for HSLAM data
         self.hslam_subscriber = self.create_subscription(
             Odometry, 'hslam_data', self.hslam_callback, 10
         )
+        
+        # Initialize subscriber for transformation parameters
         self.gps_subscriber = self.create_subscription(
             Float64MultiArray, 'transformation_parameters', self.parameters_callback, 10
         )
         
-        # Initialize publisher
+        # Initialize publisher for transformed data
         self.transformation_publisher = self.create_publisher(
             Odometry, 'transformed_data', 10
         )
     
     def hslam_callback(self, msg):
-        timestamp = msg.header.stamp
+        # Check if transformation parameters are available
+        if self.scaling_factors is None or self.rotation_matrix is None or self.translation_vector is None:
+            self.get_logger().warn('Transformation parameters not available yet')
+            return
+        
+        # Extract HSLAM data
         x = msg.pose.pose.position.x
         y = msg.pose.pose.position.y
         z = msg.pose.pose.position.z
-        self.slam_points.append([x, y, z])
-        self.timestamps.append(timestamp)
+
+        # Perform the transformation
+        transformed_point = self.transform_point([x, y, z])
+
+        # Publish the transformed data
+        transformed_msg = Odometry()
+        transformed_msg.header.stamp = msg.header.stamp
+        transformed_msg.pose.pose.position.x = transformed_point[0]
+        transformed_msg.pose.pose.position.y = transformed_point[1]
+        transformed_msg.pose.pose.position.z = transformed_point[2]
+
+        self.transformation_publisher.publish(transformed_msg)
+
+        # Log the published message
+        self.get_logger().info(
+            f"Published transformed data: Position (x, y, z) = "
+            f"({transformed_msg.pose.pose.position.x}, "
+            f"{transformed_msg.pose.pose.position.y}, "
+            f"{transformed_msg.pose.pose.position.z}), "
+            f"Timestamp = {transformed_msg.header.stamp.sec}.{transformed_msg.header.stamp.nanosec}"
+        )
 
     def parameters_callback(self, msg):
+        if len(msg.data) != 15:
+            self.get_logger().error('Received invalid transformation parameters')
+            return
+
         # Extract scaling factors (s_x, s_y, s_z)
         self.scaling_factors = np.array(msg.data[0:3])
 
@@ -44,45 +75,17 @@ class TransformNode(Node):
         # Extract translation vector (t_x, t_y, t_z)
         self.translation_vector = np.array(msg.data[12:15])
 
-    def scale_slam_points(self, slam_points, scaling_factors):
-        return np.array(slam_points) * scaling_factors
-    
-    #rotate scaled points
-    def rotate_slam_points(self, scaled_slam_points, rotation):
-        rotation_matrix = rotation.as_matrix()
-        return np.dot(scaled_slam_points, rotation_matrix.T)
-    
-    #compute transformation
-    def transform(self):
-        if len(self.slam_points) > 0 and len(self.timestamps) > 0:
-            # Create Odometry message
-            msg = Odometry()
-            
-            # Compute transformation for the first set of points
-            scaled_value = self.scale_slam_points(self.slam_points[0], self.scaling_factors)
-            rotated_value = self.rotate_slam_points(scaled_value, self.rotation_matrix)
-            transformed_slam = rotated_value + self.translation_vector
-            
-            # Set message
-            msg.header.stamp = self.timestamps[0]
-            msg.pose.pose.position.x = transformed_slam[0]
-            msg.pose.pose.position.y = transformed_slam[1]
-            msg.pose.pose.position.z = transformed_slam[2]
-            
-            # Log the published message
-            self.get_logger().info(
-                f"Published transformed data: "
-                f"Position (x, y, z) = ({msg.pose.pose.position.x}, "
-                f"{msg.pose.pose.position.y}, {msg.pose.pose.position.z}), "
-                f"Timestamp = {msg.header.stamp.sec}.{msg.header.stamp.nanosec}"
-            )
-            
-            # Publish the transformed data
-            self.transformation_publisher.publish(msg)
-            
-            # Remove processed data from arrays
-            self.timestamps.pop(0)
-            self.slam_points.pop(0)
+    def transform_point(self, point):
+        # Scale the point
+        scaled_point = np.array(point) * self.scaling_factors
+
+        # Rotate the point
+        rotated_point = np.dot(scaled_point, self.rotation_matrix.T)
+
+        # Translate the point
+        transformed_point = rotated_point + self.translation_vector
+
+        return transformed_point
 
 def main(args=None):
     rclpy.init(args=args)
