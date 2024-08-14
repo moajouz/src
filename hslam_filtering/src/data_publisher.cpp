@@ -19,7 +19,7 @@ public:
         gps_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("gps_data", 10);
 
         // Initialize file path
-        std::string file_path_template = "/home/mooo/aub/datasets/ficosa_for_HSLAM/Merged_results_GPS_xyz/merged_output_%d.txt";
+        std::string file_path_template = "/home/mooo/aub/datasets/ficosa_for_HSLAM/old_camera/Merged_results_GPS_xyz/merged_output_%d.txt";
         
         // Create the final file path using the variable
         char file_path[256];

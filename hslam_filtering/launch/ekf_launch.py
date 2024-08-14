@@ -32,11 +32,11 @@ def generate_launch_description():
             executable='get_timestamp',
             name='get_timestamp',
             output='screen'
-        ),
-        launch_ros.actions.Node(
-            package='hslam_filtering',
-            executable='get_transformation', 
-            name='get_transformation',
-            output='screen'
         )
+        # launch_ros.actions.Node(
+        #     package='hslam_filtering',
+        #     executable='get_transformation', 
+        #     name='get_transformation',
+        #     output='screen'
+        # )
     ])
