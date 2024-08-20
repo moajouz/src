@@ -12,21 +12,12 @@ class MixedDataPublisher : public rclcpp::Node  // Define a class that inherits 
 public:
     MixedDataPublisher() : Node("data_publisher"), data_publishing_done_(false)  // Constructor initializes the node with the name "data_publisher" and sets the flag to false
     {
-        int file_index = 5;  // Variable for the index
-
         // Create publishers for the "hslam_data" and "gps_data" topics with a queue size of 10
         hslam_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("hslam_data", 10);
         gps_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("gps_data", 10);
 
-        // Initialize file path
-        std::string file_path_template = "/home/mooo/aub/datasets/ficosa_for_HSLAM/old_camera/Merged_results_GPS_xyz/merged_output_%d.txt";
-        
-        // Create the final file path using the variable
-        char file_path[256];
-        snprintf(file_path, sizeof(file_path), file_path_template.c_str(), file_index);
-        
-        // Set file path
-        std::string merged_file_path = file_path;
+        // File path
+        std::string merged_file_path = "/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Merged_results/merged_output_2_may.txt";
         
         // Load and publish data from the merged file in a separate thread
         data_thread_ = std::thread(&MixedDataPublisher::loadAndPublishData, this, merged_file_path);
@@ -48,6 +39,8 @@ private:
             return;
         }
 
+        RCLCPP_INFO(this->get_logger(), "Successfully opened file: %s", file_path.c_str());
+
         std::vector<std::string> lines;
         std::string line;
 
@@ -58,23 +51,25 @@ private:
         file.close();  // Close the file
 
         // Process lines
-        for (size_t i = 0; i < lines.size(); ++i) {
-            std::istringstream iss(lines[i]);  // Create a string stream for the current line
+        for (const auto& line : lines) {
+            std::istringstream iss(line);  // Create a string stream for the current line
             int id;
             double timestamp, x, y, z;
 
-            // Read the id and timestamp
-            iss >> id >> timestamp >> x >> y >> z;
+            // Read the id, timestamp, and position data
+            if (!(iss >> id >> timestamp >> x >> y >> z)) {
+                RCLCPP_WARN(this->get_logger(), "Skipping malformed line: %s", line.c_str());
+                continue;  // Skip lines that don't match the expected format
+            }
 
             if (id == 0) {
                 publishHSLAMData(timestamp, x, y, z);
-            }
-            else {
+            } else {
                 publishGPSData(timestamp, x, y, z);
             }
 
             // Sleep for 10 milliseconds between processing data
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));  // 10 milliseconds
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
 
         data_publishing_done_ = true;  // Set the flag to indicate data publishing is done
@@ -95,7 +90,7 @@ private:
         hslam_publisher_->publish(std::move(msg));
 
         // Log the published H-SLAM data
-        RCLCPP_INFO(this->get_logger(), "Published H-SLAM data: %.0f %.16f %.16f %.15f", timestamp, x, y, z);
+        // RCLCPP_INFO(this->get_logger(), "Published H-SLAM data: ID=%.0f Position=(%.16f, %.16f, %.15f)", timestamp, x, y, z);
     }
 
     // Method to publish GPS data
@@ -113,7 +108,7 @@ private:
         gps_publisher_->publish(std::move(msg));
 
         // Log the published GPS data
-        RCLCPP_INFO(this->get_logger(), "Published GPS data: %.0f %.16f %.16f %.15f", timestamp, x_gps, y_gps, z_gps);
+        // RCLCPP_INFO(this->get_logger(), "Published GPS data: ID=%.0f Position=(%.16f, %.16f, %.15f)", timestamp, x_gps, y_gps, z_gps);
     }
 
     // Publishers for H-SLAM and GPS data

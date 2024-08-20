@@ -38,7 +38,7 @@ public:
         gps_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("gps_data", 10);
 
         // Define the path to the merged data file
-        std::string merged_file_path = "/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Transformed_manual_corrolated/merged_output_1_may.txt";
+        std::string merged_file_path = "/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Transformed_manual_corrolated/merged_output_2_may.txt";
         
         // Load and publish data from the merged file in a separate thread
         data_thread_ = std::thread(&MixedDataPublisher::loadAndPublishData, this, merged_file_path);
@@ -50,7 +50,7 @@ public:
         );
 
         // Open the file to save EKF data
-        ekf_data_file_.open("/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/EKF_Transformed_manual_corrolated/ekf_result_1_may.txt", std::ios::out | std::ios::app);
+        ekf_data_file_.open("/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/EKF_Transformed_manual_corrolated/ekf_result_2_may.txt", std::ios::out | std::ios::app);
         if (!ekf_data_file_.is_open()) {
             RCLCPP_ERROR(this->get_logger(), "Failed to open EKF data file.");
         }

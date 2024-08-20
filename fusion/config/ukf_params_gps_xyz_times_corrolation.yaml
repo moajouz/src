@@ -1,4 +1,4 @@
-ekf_filter_node:
+ukf_filter_node:
   ros__parameters:      
     frequency: 100.0  # Frequency in Hz at which the filter will run
 
@@ -13,16 +13,16 @@ ekf_filter_node:
                   false, false, false,  # Ignore roll, pitch, yaw angular velocity data
                   false, false, false]  # Ignore linear acceleration data
 
-    odom0_queue_size: 2  # The queue size for incoming odometry messages.
+    odom0_queue_size: 5  # The queue size for incoming odometry messages.
     odom0_nodelay: false  # Whether to allow the filter to process messages out of order.
-    odom0_differential: false  # Whether to treat the odometry data as differential (relative changes) instead of absolute values.
-    odom0_relative: false  # Whether to treat the odometry data as relative to the robot's starting position.
-    # odom0_pose_covariance: [1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    #                         0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    #                         0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    #                         0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    #                         0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    #                         0.0, 0.0, 0.0, 0.0, 0.0, 1.0]
+    odom0_differential: true  # Whether to treat the odometry data as differential (relative changes) instead of absolute values.
+    odom0_relative: true  # Whether to treat the odometry data as relative to the robot's starting position.
+    # odom0_pose_covariance: [0.2, 0.0, 0.0, 0.0, 0.0, 0.0,
+    #                         0.0, 0.2, 0.0, 0.0, 0.0, 0.0,
+    #                         0.0, 0.0, 0.2, 0.0, 0.0, 0.0,
+    #                         0.0, 0.0, 0.0, 0.2, 0.0, 0.0,
+    #                         0.0, 0.0, 0.0, 0.0, 0.2, 0.0,
+    #                         0.0, 0.0, 0.0, 0.0, 0.0, 0.2]
 
     odom1: /gps_data  # Topic name for GPS data
     odom1_config: [true, true, true,  # Use x, y, z position data
@@ -32,10 +32,10 @@ ekf_filter_node:
                   false, false, false]  # Ignore linear acceleration data
 
 
-    odom1_queue_size: 2  # The queue size for incoming GPS messages.
+    odom1_queue_size: 5  # The queue size for incoming GPS messages.
     odom1_nodelay: false  # Whether to allow the filter to process messages out of order.
     odom1_differential: false  # Whether to treat the GPS data as differential (relative changes) instead of absolute values.
-    odom1_relative: false  # Whether to treat the GPS data as relative to the robot's starting position.
+    odom1_relative: true  # Whether to treat the GPS data as relative to the robot's starting position.
     # odom1_pose_covariance: [0.1, 0.0, 0.0, 0.0, 0.0, 0.0,
     #                         0.0, 0.1, 0.0, 0.0, 0.0, 0.0,
     #                         0.0, 0.0, 0.1, 0.0, 0.0, 0.0,

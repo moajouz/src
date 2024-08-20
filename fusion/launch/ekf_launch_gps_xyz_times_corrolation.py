@@ -16,8 +16,8 @@ def generate_launch_description():
         # UKF Node
         launch_ros.actions.Node(
             package='robot_localization',
-            executable='ekf_node',
-            name='ekf_filter_node',
+            executable='ukf_node',
+            name='ukf_filter_node',
             output='screen',
             parameters=['/home/mooo/ros2_ws/src/fusion/config/ukf_params_gps_xyz_times_corrolation.yaml']
         ),

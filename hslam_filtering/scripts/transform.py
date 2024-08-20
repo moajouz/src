@@ -6,7 +6,7 @@ from std_msgs.msg import Float64MultiArray
 import numpy as np
 
 class TransformNode(Node):
-    def __init__(self):
+    def __init__(self): 
         super().__init__('transform')
 
         # Initialize current transformation parameters
@@ -20,7 +20,7 @@ class TransformNode(Node):
         )
         
         # Initialize subscriber for transformation parameters
-        self.gps_subscriber = self.create_subscription(
+        self.parameters_subscriber = self.create_subscription(
             Float64MultiArray, 'transformation_parameters', self.parameters_callback, 10
         )
         
@@ -45,7 +45,6 @@ class TransformNode(Node):
 
         # Publish the transformed data
         transformed_msg = Odometry()
-        transformed_msg.header.stamp = msg.header.stamp
         transformed_msg.pose.pose.position.x = transformed_point[0]
         transformed_msg.pose.pose.position.y = transformed_point[1]
         transformed_msg.pose.pose.position.z = transformed_point[2]
@@ -53,13 +52,12 @@ class TransformNode(Node):
         self.transformation_publisher.publish(transformed_msg)
 
         # Log the published message
-        self.get_logger().info(
-            f"Published transformed data: Position (x, y, z) = "
-            f"({transformed_msg.pose.pose.position.x}, "
-            f"{transformed_msg.pose.pose.position.y}, "
-            f"{transformed_msg.pose.pose.position.z}), "
-            f"Timestamp = {transformed_msg.header.stamp.sec}.{transformed_msg.header.stamp.nanosec}"
-        )
+        # self.get_logger().info(
+        #     f"Published transformed data: Position (x, y, z) = "
+        #     f"({transformed_msg.pose.pose.position.x}, "
+        #     f"{transformed_msg.pose.pose.position.y}, "
+        #     f"{transformed_msg.pose.pose.position.z})"
+        # )
 
     def parameters_callback(self, msg):
         if len(msg.data) != 15:
@@ -74,6 +72,8 @@ class TransformNode(Node):
 
         # Extract translation vector (t_x, t_y, t_z)
         self.translation_vector = np.array(msg.data[12:15])
+
+        self.get_logger().info('received transformation')
 
     def transform_point(self, point):
         # Scale the point

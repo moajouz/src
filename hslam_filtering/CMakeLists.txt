@@ -11,26 +11,24 @@ find_package(nav_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(robot_localization REQUIRED)
-
 find_package(python_cmake_module REQUIRED)
 
 # Add C++ executables
 add_executable(data_publisher src/data_publisher.cpp)
 ament_target_dependencies(data_publisher rclcpp nav_msgs sensor_msgs)
 
-add_executable(get_timestamp src/get_timestamp.cpp)
-ament_target_dependencies(get_timestamp rclcpp nav_msgs builtin_interfaces std_msgs)
-
 # Install C++ executables
 install(TARGETS
   data_publisher
-  get_timestamp
   DESTINATION lib/${PROJECT_NAME}
 )
 
 # Install Python scripts
 install(PROGRAMS
   scripts/get_transformation.py
+  scripts/transform.py
+  scripts/data_control.py
+  scripts/save_ukf_results.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -39,6 +37,8 @@ file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${PROJECT_NAME}")
 install(FILES
   scripts/get_transformation.py
   scripts/transform.py
+  scripts/data_control.py
+  scripts/save_ukf_results.py
   DESTINATION lib/${PROJECT_NAME}
   PERMISSIONS OWNER_EXECUTE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
 )
