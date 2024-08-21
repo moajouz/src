@@ -28,7 +28,7 @@ class TransformationNode(Node):
         self.gps_points = []
 
         # Initialize starting frames
-        self.min_frames = 600
+        self.min_frames = 20000
 
         # Initialize comparators
         self.translation_comparator = np.array([])
@@ -91,15 +91,18 @@ class TransformationNode(Node):
     #         self.prev_scaling_factors = self.scaling_factors
     #         self.prev_rotation_matrix = self.rotation.as_matrix()
 
+    # this is the version that publishes always
     def publish(self):
-        if self.allow_publish:
+        # Only publish when a new transformation is computed
+        if  not np.array_equal(self.scaling_factors, self.prev_scaling_factors):
+            
+            # Create and publish the transformation message
             msg = Float64MultiArray()
-            msg.data = self.scaling_factors.tolist() + self.rotation.as_matrix().flatten().tolist() + self.translation_vector.tolist()
+            msg.data = self.scaling_factors.tolist()
             self.transformation_publisher.publish(msg)
             self.get_logger().info(f'Published transformation data: {msg.data}')                    
 
-            self.allow_publish=0
-
+            self.prev_scaling_factors = self.scaling_factors
     def process(self, slam, gps):
         slam_points = np.array(slam)
         gps_points = np.array(gps)

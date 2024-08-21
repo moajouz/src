@@ -35,7 +35,7 @@ class Synchronization(Node):
         # self.slam_counter += 1
         # self.check_and_publish()
         self.hslam_sync.publish(self.slam_data)
-        self.get_logger().info('sent slam')
+        self.get_logger().info(f'sent slam:{msg.pose.pose.position.x}, {msg.pose.pose.position.y}, {msg.pose.pose.position.z}')
 
 
     def gps_callback(self, msg):
@@ -43,7 +43,7 @@ class Synchronization(Node):
         # self.gps_counter += 1
         # self.check_and_publish()
         self.gps_sync.publish(self.gps_data)
-        self.get_logger().info('sent gps')
+        self.get_logger().info(f'sent gps:{msg.pose.pose.position.x}, {msg.pose.pose.position.y}, {msg.pose.pose.position.z}')
 
     # def check_and_publish(self):
     #     if self.slam_data and self.gps_data:

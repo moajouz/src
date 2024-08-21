@@ -30,8 +30,8 @@ class UKFDataLogger(Node):
         )
 
         # File paths for saving data
-        self.file_path = '/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Auto_EKF/ekf_result_2_may.txt'
-        self.merged_path = '/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Auto_EKF/merged_output_2_may.txt'
+        self.file_path = '/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Auto_EKF/ekf_result_4_may.txt'
+        self.merged_path = '/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Auto_EKF/merged_output_4_may.txt'
 
         try:
             # Open the files in write mode to clear existing data

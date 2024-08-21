@@ -10,9 +10,13 @@ class TransformNode(Node):
         super().__init__('transform')
 
         # Initialize current transformation parameters
-        self.scaling_factors = None
-        self.rotation_matrix = None
-        self.translation_vector = None
+        self.scaling_factors = np.array([39.93208005, 133.89908631, 2.57512921])
+        self.rotation_matrix = np.array([
+            [-0.13326332, 0.99081926, -0.02276119],
+            [0.99103967, 0.13343154, 0.0060326],
+            [0.00901428, -0.02175332, -0.99972273]
+        ])
+        self.translation_vector = np.array([-12.45045305, -4.90626922, 0.19200221])
 
         # Initialize subscriber for HSLAM data
         self.hslam_subscriber = self.create_subscription(
@@ -20,9 +24,9 @@ class TransformNode(Node):
         )
         
         # Initialize subscriber for transformation parameters
-        self.parameters_subscriber = self.create_subscription(
-            Float64MultiArray, 'transformation_parameters', self.parameters_callback, 10
-        )
+        # self.parameters_subscriber = self.create_subscription(
+        #     Float64MultiArray, 'transformation_parameters', self.parameters_callback, 10
+        # )
         
         # Initialize publisher for transformed data
         self.transformation_publisher = self.create_publisher(
@@ -50,6 +54,7 @@ class TransformNode(Node):
         transformed_msg.pose.pose.position.z = transformed_point[2]
 
         self.transformation_publisher.publish(transformed_msg)
+        self.get_logger().info(f'transformed slam: {x}, {y}, {z}')
 
         # Log the published message
         # self.get_logger().info(
@@ -59,21 +64,26 @@ class TransformNode(Node):
         #     f"{transformed_msg.pose.pose.position.z})"
         # )
 
-    def parameters_callback(self, msg):
-        if len(msg.data) != 15:
-            self.get_logger().error('Received invalid transformation parameters')
-            return
+    # def parameters_callback(self, msg):
+    #     if len(msg.data) != 15:
+    #         self.get_logger().error('Received invalid transformation parameters')
+    #         return
 
-        # Extract scaling factors (s_x, s_y, s_z)
-        self.scaling_factors = np.array(msg.data[0:3])
+    #     # Extract scaling factors (s_x, s_y, s_z)
+    #     self.scaling_factors = np.array(msg.data[0:3])
 
-        # Extract rotation matrix (3x3)
-        self.rotation_matrix = np.array(msg.data[3:12]).reshape((3, 3))
+    #     # Extract rotation matrix (3x3)
+    #     self.rotation_matrix = np.array(msg.data[3:12]).reshape((3, 3))
 
-        # Extract translation vector (t_x, t_y, t_z)
-        self.translation_vector = np.array(msg.data[12:15])
+    #     # Extract translation vector (t_x, t_y, t_z)
+    #     self.translation_vector = np.array(msg.data[12:15])
 
-        self.get_logger().info('received transformation')
+    #     self.get_logger().info('received transformation')
+
+    # def parameters_callback(self, msg):
+    # #     # Extract scaling factors (s_x, s_y, s_z)
+    #     self.scaling_factors = np.array(msg.data[0:3])
+
 
     def transform_point(self, point):
         # Scale the point
