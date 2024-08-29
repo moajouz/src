@@ -9,7 +9,7 @@ class Synchronization(Node):
         
         # Initialize subscribers
         self.hslam_subscriber = self.create_subscription(
-            Odometry, 'transformed_data', self.hslam_callback, 10
+            Odometry, 'hslam_data', self.hslam_callback, 10
         )
         self.gps_subscriber = self.create_subscription(
             Odometry, 'gps_data', self.gps_callback, 10

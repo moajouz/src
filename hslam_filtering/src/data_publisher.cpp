@@ -17,7 +17,7 @@ public:
         gps_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("gps_data", 10);
 
         // File path
-        std::string merged_file_path = "/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Merged_results/merged_output_4_may.txt";
+        std::string merged_file_path = "/home/mooo/aub/datasets/ficosa_for_HSLAM/new_camera/Merged_results_LLA/merged_output_4_may.txt";
         
         // Load and publish data from the merged file in a separate thread
         data_thread_ = std::thread(&MixedDataPublisher::loadAndPublishData, this, merged_file_path);

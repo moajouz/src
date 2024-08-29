@@ -1,0 +1,29 @@
+navsat_transform_node:
+  ros__parameters:
+    magnetic_declination_radians: 0.0
+    yaw_offset: 0.0  # Adjust this if you need to correct the yaw
+    transform_time_offset: 0.0  # Time offset for GPS to SLAM synchronization
+    gps0: /gps_data  # Input GPS topic
+    odom0: /hslam_data  # SLAM data topic
+    
+    # Configuration for GPS
+    gps0_queue_size: 10
+    gps0_nodelay: true
+    gps0_differential: false
+    gps0_relative: true
+    
+    # Configuration for SLAM (Odometry) data
+    odom0_queue_size: 10
+    odom0_nodelay: true
+    odom0_differential: true
+    odom0_relative: false
+    
+    # Transform settings
+    publish_tf: true  # Publish the transform between frames
+    transform_timeout: 0.2  # Timeout for the transformation
+    
+    # Optional: Correcting scale, transformation
+    fixed_frame: "odom"  # Reference frame for SLAM data
+    target_frame: "map"  # Target frame for GPS data after transformation
+    odom0_config: [true, true, true, false, false, false, false, false, false, false, false, false, false, false]
+    gps0_config: [true, true, true, false, false, false, false, false, false, false, false, false, false, false]

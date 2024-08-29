@@ -25,8 +25,6 @@ install(TARGETS
 
 # Install Python scripts
 install(PROGRAMS
-  scripts/get_transformation.py
-  scripts/transform.py
   scripts/data_control.py
   scripts/save_ukf_results.py
   DESTINATION lib/${PROJECT_NAME}
@@ -35,8 +33,6 @@ install(PROGRAMS
 # Ensure the Python scripts are executable
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/${PROJECT_NAME}")
 install(FILES
-  scripts/get_transformation.py
-  scripts/transform.py
   scripts/data_control.py
   scripts/save_ukf_results.py
   DESTINATION lib/${PROJECT_NAME}

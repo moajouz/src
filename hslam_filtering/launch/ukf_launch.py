@@ -12,14 +12,15 @@ def generate_launch_description():
             output='screen'
         ),
 
-        # Launch the save_ukf_results.py Python script
+        # NavSat Transform Node
         Node(
-            package='hslam_filtering',
-            executable='save_ukf_results.py',
-            name='save_ukf_results',
-            output='screen'
+            package='robot_localization',
+            executable='navsat_transform_node',
+            name='navsat_transform_node',
+            output='screen',
+            parameters=['/home/mooo/ros2_ws/src/hslam_filtering/config/navsat_transform_params.yaml']
         ),
-
+        
         # UKF Node
         Node(
             package='robot_localization',
@@ -28,7 +29,15 @@ def generate_launch_description():
             output='screen',
             parameters=['/home/mooo/ros2_ws/src/hslam_filtering/config/ukf_params.yaml']
         ),
-
+        
+        # Launch the save_ukf_results.py Python script
+        Node(
+            package='hslam_filtering',
+            executable='save_ukf_results.py',
+            name='save_ukf_results',
+            output='screen'
+        ),
+        
         # Launch the data_control.py Python script
         Node(
             package='hslam_filtering',
@@ -36,23 +45,7 @@ def generate_launch_description():
             name='data_control',
             output='screen'
         ),
-
-        # Launch the transform.py Python script
-        Node(
-            package='hslam_filtering',
-            executable='transform.py',
-            name='transform',
-            output='screen'
-        ),
-
-        # Launch the get_transformation.py Python script
-        Node(
-            package='hslam_filtering',
-            executable='get_transformation.py',
-            name='get_transformation',
-            output='screen'
-        ),
-
+        
         # Launch the data_publisher C++ node
         Node(
             package='hslam_filtering',
